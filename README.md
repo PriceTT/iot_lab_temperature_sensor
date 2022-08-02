@@ -1,21 +1,27 @@
 # Iot Lab Temperature Sensor
 
 IOT sensor to monitor the cooling room temperature.
-* High tempureature is sent voa webhook to MS TEAMS
+* High tempureature is sent via webhook to MS TEAMS
 * Log the values to the PI historian
 
 
-## Parts List
+## Parts List  
 
-[Arduino Board MKR WIFI 1010 MKR](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)
+- [Arduino Board MKR WIFI 1010 MKR](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)  
+- [LM135 - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05/ )  
+- [OLED Display SSD1306]https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/  
 
 
 
+## Getting started  
+ 
 
-## Getting started
-
-https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors
-
+https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors  
+https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
+https://create.arduino.cc/projecthub/sarful/serial-temperature-sensor-arduino-workshop-aab43a?ref=part&ref_id=8233&offset=149  
+https://forum.arduino.cc/t/lm135-precision-temperature-sensor/20085/4
+https://elektronik-lavpris.dk/files/sup2/LM135.pdf
+https://www.arnabkumardas.com/arduino-tutorial/lm335-temperature-sensor/
 
 ## Further Reading
 
