@@ -1,7 +1,7 @@
 # Iot Lab Temperature Sensor
 
 IOT sensor to monitor the cooling room temperature.
-* High tempureature is sent via webhook to MS TEAMS
+* High tempureature alert is sent via webhook to MS TEAMS
 * Log the values to the PI historian
 
 
