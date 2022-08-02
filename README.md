@@ -8,7 +8,7 @@ IOT sensor to monitor the cooling room temperature.
 ## Parts List  
 
 - [Arduino Board MKR WIFI 1010 MKR](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)  
-- [LM135 - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05/ )  
+- [LM135 - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05)  
 - [OLED Display SSD1306]https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/  
 
 
