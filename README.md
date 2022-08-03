@@ -4,21 +4,25 @@ IOT sensor to monitor the cooling room temperature.
 * High tempureature alert is sent via webhook to MS TEAMS
 * Log the values to the PI historian
 
+**Pinout Arduino MKR WIFI 1010**  
+<p align="center">
+  <img src="Pinout-MKRwifi1010_latest.png" >
+</p>
+
 
 ## Parts List  
 
-- [Arduino Board MKR WIFI 1010 MKR](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)  
+- [Arduino MKR WIFI 1010](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)  
 - [LM335A - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05)  
 - [OLED SPI Display SSD1306](https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/)
-
-
 
 ## Getting started  
 - https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors  
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
 - https://www.engineersgarage.com/arduino-ssd1306-oled-display/
-
+- https://circuitdigest.com/microcontroller-projects/arduino-ssd1306-oled-display
+- https://www.sarathiblog.com/SPI-oled-arduino.html
 
 ## Further Reading
 **MMQT**  
@@ -44,6 +48,7 @@ IOT sensor to monitor the cooling room temperature.
 - https://randomnerdtutorials.com/guide-for-oled-display-with-arduino/ 
 - https://electropeak.com/learn/interfacing-0-96-inch-spi-oled-display-module-with-arduino/
 - https://www.instructables.com/OLED-Tutorial-Convert-SPI-to-I2C/
+- https://lastminuteengineers.com/oled-display-arduino-tutorial/
 
 **Temperature Sensors**  
 - https://create.arduino.cc/projecthub/sarful/serial-temperature-sensor-arduino-workshop-aab43a?ref=part&ref_id=8233&offset=149  
