@@ -35,6 +35,7 @@ IOT sensor to monitor the cooling room temperature.
 - https://stackoverflow.com/questions/55588751/how-to-post-to-a-ms-teams-webhook-from-esp8266
 - https://forum.arduino.cc/t/wifi-end-disables-connection-but-not-the-wifi-module/604754/3
 - https://docs.arduino.cc/tutorials/communication/wifi-nina-examples
+- https://store-usa.arduino.cc/products/arduino-mkr-wifi-1010
 
 **Send data to PI**  
 - https://pisquare.osisoft.com/s/Blog-Detail/a8r1I000000H73GQAS/arduino-to-pi-with-pi-web-api
