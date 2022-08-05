@@ -28,6 +28,13 @@ SPI should be faster than I2C but I could not get it to work. Hence, the display
 
 Note in the future purchace the [I2C version of the OLED](https://elektronik-lavpris.dk/p148473/sbc-oled01-oled-display-for-arduino-raspberry-pi-or-other-single-board/)  
 
+## TODO  
+- Test connecting to teams (blocked by getting the correct domain)
+- Average temp over a period
+- Send data via MMQT
+- Test out PI integration
+
+
 ## Further Reading and Info
 **MMQT**  
 - https://docs.arduino.cc/tutorials/mkr-wifi-1010/mqtt-device-to-device
