@@ -17,6 +17,7 @@ float input_voltage = 5000.0; // For better acc. measure the exact value
 
 float temperatureC;
 float temperatureK;
+float temp_offset = 157;     //Set to zero if calibrated
 
 void setup() {
   pinMode(sensor_pin, INPUT);
@@ -27,7 +28,7 @@ void setup() {
     for (;;);
   }
 
-  delay(2000);
+  delay(3000);
   display.clearDisplay();
   display.setTextColor(WHITE);
 }
@@ -37,7 +38,7 @@ void loop() {
   voltage_out = (sensor_value * input_voltage) / 1024;
 
   // calculate temperature for LM335
-  temperatureK = voltage_out / mv_per_kelvin;
+  temperatureK = (voltage_out / mv_per_kelvin) - temp_offset;
   temperatureC = temperatureK - 273;
 
   print_value_to_console(temperatureK, temperatureC, voltage_out);
