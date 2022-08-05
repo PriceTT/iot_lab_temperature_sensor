@@ -1,13 +1,14 @@
 # Iot Lab Temperature Sensor
 
 IOT sensor to monitor the cooling room temperature.
-* High tempureature alert is sent via webhook to MS TEAMS
+* High tempureature alert is sent via webhook to Discord/MS TEAMS
 * Log the values to the PI historian
 
 **Pinout Arduino MKR WIFI 1010**  
 <p align="center">
-  <img src="Pinout-MKRwifi1010_latest.png" >
+  <img src="img.JPEG" >
 </p>
+
 
 
 ## Parts List  
@@ -17,16 +18,19 @@ IOT sensor to monitor the cooling room temperature.
 - [OLED SPI Display SSD1306](https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/)
 
 ## Getting started  
-- https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors  
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
-- https://www.engineersgarage.com/arduino-ssd1306-oled-display/
-- https://circuitdigest.com/microcontroller-projects/arduino-ssd1306-oled-display
-- https://www.sarathiblog.com/SPI-oled-arduino.html
 
-## Further Reading
+
+
+**Convert SPI OLED to I2C**  
+SPI should be faster than I2C but I could not get it to work. Hence, the display was [converted to I2C](https://www.instructables.com/OLED-Tutorial-Convert-SPI-to-I2C/).     
+
+Note in the future purchace the [I2C version of the OLED](https://elektronik-lavpris.dk/p148473/sbc-oled01-oled-display-for-arduino-raspberry-pi-or-other-single-board/)  
+
+## Further Reading and Info
 **MMQT**  
-- https://docs.arduino.cc/tutorials/uno-wifi-rev2/uno-wifi-r2-mqtt-device-to-device  
+- https://docs.arduino.cc/tutorials/mkr-wifi-1010/mqtt-device-to-device
 - https://juanstechblog.blogspot.com/2022/02/diy-mqtt-temperature-humidity-sensor-arduino-esp8266-dht22.html
 - http://www.whatimade.today/make-a-remote-temp-sensor-with-permanent-display-inside-your-house/
 
@@ -50,9 +54,18 @@ IOT sensor to monitor the cooling room temperature.
 - https://electropeak.com/learn/interfacing-0-96-inch-spi-oled-display-module-with-arduino/
 - https://www.instructables.com/OLED-Tutorial-Convert-SPI-to-I2C/
 - https://lastminuteengineers.com/oled-display-arduino-tutorial/
+- https://www.sarathiblog.com/SPI-oled-arduino.html
+- https://www.engineersgarage.com/arduino-ssd1306-oled-display/
+- https://circuitdigest.com/microcontroller-projects/arduino-ssd1306-oled-display
 
 **Temperature Sensors**  
 - https://create.arduino.cc/projecthub/sarful/serial-temperature-sensor-arduino-workshop-aab43a?ref=part&ref_id=8233&offset=149  
 - https://forum.arduino.cc/t/lm135-precision-temperature-sensor/20085/4
 - https://www.arnabkumardas.com/arduino-tutorial/lm335-temperature-sensor/
 - https://diyodemag.com/education/the_classroom_the_lm335_temperature_sensor#tab-altronics-1167440571
+- https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors  
+
+**Pinout Arduino MKR WIFI 1010**   
+<p align="center">
+  <img src="Pinout-MKRwifi1010_latest.png" >
+</p>
