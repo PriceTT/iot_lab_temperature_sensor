@@ -55,3 +55,4 @@ IOT sensor to monitor the cooling room temperature.
 - https://create.arduino.cc/projecthub/sarful/serial-temperature-sensor-arduino-workshop-aab43a?ref=part&ref_id=8233&offset=149  
 - https://forum.arduino.cc/t/lm135-precision-temperature-sensor/20085/4
 - https://www.arnabkumardas.com/arduino-tutorial/lm335-temperature-sensor/
+- https://diyodemag.com/education/the_classroom_the_lm335_temperature_sensor#tab-altronics-1167440571
