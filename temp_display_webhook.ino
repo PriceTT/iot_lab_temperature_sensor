@@ -1,5 +1,5 @@
 /*
-Connect to WiFI, post temperature to console and discord via webhook
+  Testing connecting to WiFI and posting a msg to teams or discord
 */
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -25,6 +25,9 @@ char pass[] = SECRET_PASS;
 const String discord_webhook = SECRET_WEBHOOK;
 const String teams_webhook = SECRET_WEBHOOK_MS;
 const String discord_tts = SECRET_TTS;
+String content;
+String content_type;
+String payload;
 
 int port = 443;
 int status = WL_IDLE_STATUS;     // the Wifi radio's status
@@ -32,6 +35,10 @@ WiFiSSLClient client;
 HttpClient http_client = HttpClient(client, server, port);
 
 /////////////Sensor set up///////////////////////////////////////////
+
+unsigned long sum_sensor_value;
+unsigned long average_sensor_value;  
+const int num_readings = 1000;    // average  number of readings
 
 const int sensor_pin = A0;
 float sensor_value;
@@ -52,10 +59,13 @@ unsigned long  elapsed_time;                   // Elasped time intialized with r
 
 void setup() {
   // Initilaze pin
+  delay(100);       //"Stabilization time".   Probably not necessary  
   pinMode(sensor_pin, INPUT);
+  delay(100);       //"Stabilization time".   Probably not necessary  
 
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
+  delay(100);       //"Stabilization time".   Probably not necessary
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
     Serial.println(F("SSD1306 allocation failed"));
     for (;;);
@@ -88,32 +98,36 @@ void setup() {
 
 void loop() {
 
-  String content;
-  String content_type;
-  String payload;
-
   loop_timer = millis();       // Start loop timer ms
   elapsed_time = millis();
+  // Screen refresh loop
   while (elapsed_time - loop_timer < interval_sending_data) {
-    // Get sensor value
-    sensor_value = analogRead(sensor_pin);
-    voltage_out = (sensor_value * input_voltage) / ad_converter;
+    sum_sensor_value = 0;        //Initialize/reset
+    //Smoothing sensor data. Take num_readings, find  average.  
+    for (int i = 0; i < num_readings; i++)
+    {
+      // Get sensor value
+      sensor_value = analogRead(sensor_pin);
+      sum_sensor_value = sum_sensor_value + sensor_value;
+    }
+      
+      average_sensor_value = (sum_sensor_value/num_readings);      
+      voltage_out = (average_sensor_value * input_voltage) / ad_converter;
 
-    // calculate temperature for LM335
-    temperatureK = (voltage_out / mv_per_kelvin) - temp_offset;
-    temperatureC = temperatureK - 273;
+      // calculate temperature for LM335
+      temperatureK = (voltage_out / mv_per_kelvin) - temp_offset;
+      temperatureC = temperatureK - 273;
 
-    print_value_to_console(temperatureK, temperatureC, voltage_out);
-    print_value_to_screen(temperatureK, temperatureC);
-    delay(screen_refresh);
-    elapsed_time = millis();
+      print_value_to_console(temperatureK, temperatureC, voltage_out);
+      print_value_to_screen(temperatureK, temperatureC);
+      delay(screen_refresh);
+      elapsed_time = millis();
   }
 
   // Send to discord
-
+  Serial.println("----------------------------------------");
   Serial.print("[LOG]: Attempting to connect to: ");
   Serial.println(server);
-
   Serial.println("[LOG]: Making POST request");
 
   content_type  = "application/json";
