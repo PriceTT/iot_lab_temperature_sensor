@@ -30,7 +30,7 @@ Note in the future purchace the [I2C version of the OLED](https://elektronik-lav
 
 ## TODO  
 - Test connecting to teams (blocked by getting the correct domain)
-- Average temp over a period
+- ~Average temp over a period~
 - Send data via MMQT
 - Test out PI integration
 
@@ -40,6 +40,10 @@ Note in the future purchace the [I2C version of the OLED](https://elektronik-lav
 - https://docs.arduino.cc/tutorials/mkr-wifi-1010/mqtt-device-to-device
 - https://juanstechblog.blogspot.com/2022/02/diy-mqtt-temperature-humidity-sensor-arduino-esp8266-dht22.html
 - http://www.whatimade.today/make-a-remote-temp-sensor-with-permanent-display-inside-your-house/
+
+**Rest API server**  
+- https://www.survivingwithandroid.com/esp32-rest-api-esp32-api-server/
+- https://www.arduino.cc/en/Guide/MKRWiFi1010/hosting-a-webserver
 
 **Webhook**  
 - https://create.arduino.cc/projecthub/usini/send-a-message-on-discord-f216e0
@@ -71,6 +75,7 @@ Note in the future purchace the [I2C version of the OLED](https://elektronik-lav
 - https://www.arnabkumardas.com/arduino-tutorial/lm335-temperature-sensor/
 - https://diyodemag.com/education/the_classroom_the_lm335_temperature_sensor#tab-altronics-1167440571
 - https://www.arduino.cc/en/Guide/MKRWiFi1010/connecting-sensors  
+- https://forum.arduino.cc/t/averaging-of-data/545871/4
 
 **Pinout Arduino MKR WIFI 1010**   
 <p align="center">
