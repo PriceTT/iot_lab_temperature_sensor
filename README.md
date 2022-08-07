@@ -51,7 +51,7 @@ Insall python packages
 ```
 poetry install  
 ```
-
+___
 3. Subscribe to the broker  
 ```
 python mqtt_client.py 
