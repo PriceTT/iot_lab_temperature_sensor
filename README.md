@@ -57,7 +57,9 @@ ___
 python mqtt_client.py 
 
 ```
-
+<p align="center">
+  <img src="imgs/mqtt.png" >
+</p>
 
 
 ## TODO  
@@ -111,5 +113,5 @@ python mqtt_client.py
 
 **Pinout Arduino MKR WIFI 1010**   
 <p align="center">
-  <img src="imgs/Pinout-MKRwifi1010_latest.png" >
+  <img src="imgs/pin_out.png" >
 </p>
