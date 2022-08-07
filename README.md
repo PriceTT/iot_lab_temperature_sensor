@@ -21,6 +21,13 @@ IOT sensor to monitor the cooling room temperature.
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
 
+**Note**: Create a file called arduino_secrets.h in the scr folder with your credentials:  
+#define SECRET_SSID "my_sid"  
+#define SECRET_PASS "my_password"  
+#define SECRET_WEBHOOK "https://discord.com/api/webhooks/xxx"  
+#define SECRET_TTS "true"  
+#define SECRET_WEBHOOK_MS "https://outlook.webhook.office.com/webhookb2/xxx"  
+
 
 
 **Convert SPI OLED to I2C**  
@@ -67,7 +74,7 @@ python mqtt_client.py
 - ~Average temp over a period~
 - ~Send data via MMQT~
 - Random dots on screen during load (removing vcc and ground seems to work)
-- Add wifi and loading status on screen during load
+- ~Add wifi and loading status on screen during load~
 - Test out PI integration
 
 
