@@ -82,7 +82,9 @@ void setup() {
     Serial.println(F("SSD1306 allocation failed"));
     for (;;);
   }
-
+  // Show initial display buffer contents on the screen --
+  // the library initializes this with an Adafruit splash screen.
+  display.display();
   delay(2000);
   display.clearDisplay();
   display.setTextColor(WHITE);
@@ -94,6 +96,9 @@ void setup() {
   while (status != WL_CONNECTED) {
     Serial.print("[LOG]: Attempting to connect to network: ");
     Serial.println(ssid);
+    
+    print_setup_to_screen("Attempting to connect to network " +String(ssid) + " ...",2000);
+    
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
 
@@ -101,7 +106,9 @@ void setup() {
     delay(10000);
 
   }
-
+  
+  print_setup_to_screen("Success connected to network " +String(ssid) + " ...",2000);
+  
   Serial.println("[LOG]: You're connected to the network");
   Serial.println("----------------------------------------");
   get_wifi_connection_info();
@@ -113,9 +120,13 @@ void setup() {
     Serial.print("[ERROR] MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
 
+    print_setup_to_screen("[ERROR] MQTT connection failed! ...",5000);
+
     while (1);
   }
-
+  
+  print_setup_to_screen("Success connected to MQTT broker!  " +String(broker) + " ...",5000);
+  
   Serial.println("[LOG]: You're connected to the MQTT broker!");
   Serial.println();
   Serial.println("----------------------------------------");
@@ -267,5 +278,22 @@ void print_value_to_screen(float _temperatureK, float _temperatureC) {
   display.print("K");
 
   display.display();
+
+}
+
+void print_setup_to_screen(String _status, int _delay) {
+
+  // clear display
+  display.clearDisplay();
+
+  
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print("Status: ");
+  display.setTextSize(1);
+  display.setCursor(0, 10);
+  display.print(_status);
+  display.display();
+  delay(_delay); 
 
 }
