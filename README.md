@@ -66,6 +66,8 @@ python mqtt_client.py
 - Test connecting to teams (blocked by getting the correct domain)
 - ~Average temp over a period~
 - ~Send data via MMQT~
+- Random dots on screen during load (removing vcc and ground seems to work)
+- Add wifi and loading status on screen during load
 - Test out PI integration
 
 
