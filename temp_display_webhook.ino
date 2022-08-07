@@ -50,10 +50,11 @@ float temperatureC;
 float temperatureK;
 float temp_offset = 157;     //Set to zero if calibrated
 float ad_converter = 1023;
+float temp_alert = -10;     // Temperature value to send alert
 
 unsigned long loop_timer;
 unsigned long  screen_refresh = 1000;            // Refresh rate oled screen ms
-unsigned long  interval_sending_data = 60000;   // Interval for sending data ms
+unsigned long  interval_sending_data = 600000;  // Interval for sending data ms
 unsigned long  elapsed_time;                   // Elasped time intialized with random number
 
 
@@ -124,8 +125,12 @@ void loop() {
       elapsed_time = millis();
   }
 
+  if (temperatureC >= temp_alert) {
   // Send to discord
   Serial.println("----------------------------------------");
+  Serial.print("[LOG]: Temperature greater than ");
+  Serial.print(String(temp_alert));
+  Serial.println("ºC ... sending alert.");
   Serial.print("[LOG]: Attempting to connect to: ");
   Serial.println(server);
   Serial.println("[LOG]: Making POST request");
@@ -142,6 +147,7 @@ void loop() {
   Serial.print(String(interval_sending_data / 1000));
   Serial.println(" seconds before next transmission.");
   Serial.println("----------------------------------------");
+  }
 }
 
 void post_webhook(String content_, String content_type_, String webhook_) {
