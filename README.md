@@ -6,7 +6,7 @@ IOT sensor to monitor the cooling room temperature.
 
 **Pinout Arduino MKR WIFI 1010**  
 <p align="center">
-  <img src="img.JPEG" >
+  <img src="imgs/img.JPEG" >
 </p>
 
 
@@ -17,7 +17,7 @@ IOT sensor to monitor the cooling room temperature.
 - [LM335A - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05)  
 - [OLED SPI Display SSD1306](https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/)
 
-## Getting started  
+## Getting started with the hardware
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
 
@@ -28,10 +28,42 @@ SPI should be faster than I2C but I could not get it to work. Hence, the display
 
 Note in the future purchace the [I2C version of the OLED](https://elektronik-lavpris.dk/p148473/sbc-oled01-oled-display-for-arduino-raspberry-pi-or-other-single-board/)  
 
+## Getting started with the mqtt client
+1. Clone this GIT repository:
+```
+git@github.com:PriceTT/iot_lab_temperature_sensor.git
+```
+___
+
+2. Set up an virtual environment.  
+
+Navigate to **mqtt_client** folder and create conda evironment which reads the `environment.yml` file.
+```
+conda env create
+```
+
+Activate the virtual environment.
+```
+conda activate mqtt-env
+
+```
+Insall python packages
+```
+poetry install  
+```
+
+3. Subscribe to the broker  
+```
+python mqtt_client.py 
+
+```
+
+
+
 ## TODO  
 - Test connecting to teams (blocked by getting the correct domain)
 - ~Average temp over a period~
-- Send data via MMQT
+- ~Send data via MMQT~
 - Test out PI integration
 
 
@@ -79,5 +111,5 @@ Note in the future purchace the [I2C version of the OLED](https://elektronik-lav
 
 **Pinout Arduino MKR WIFI 1010**   
 <p align="center">
-  <img src="Pinout-MKRwifi1010_latest.png" >
+  <img src="imgs/Pinout-MKRwifi1010_latest.png" >
 </p>

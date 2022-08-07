@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "mqtt-env"
+version = "0.0.1"
+description = ""
+authors = ["JPR <jpr@novozymes.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "*"
+pandas = "*"
+plotly = "*"
+paho-mqtt = "^1.6.1"
+
+
+
+[tool.poetry.dev-dependencies]
+black = "*"
+jupyterlab = "*"
+ipykernel = "*"
+ipywidgets = "*"
+notebook = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

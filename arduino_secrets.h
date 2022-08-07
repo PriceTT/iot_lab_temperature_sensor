@@ -1,5 +1,0 @@
-#define SECRET_SSID ""
-#define SECRET_PASS ""
-#define SECRET_WEBHOOK "https://discord.com/api/webhooks/aaaaa/zzzz"
-#define SECRET_TTS "true"
-#define SECRET_WEBHOOK_MS "'https://outlook.office.com/webhookb2/aaaaa/IncomingWebhook/zzzz"
