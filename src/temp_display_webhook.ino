@@ -6,6 +6,8 @@
 #include <Adafruit_SSD1306.h>
 #include <ArduinoHttpClient.h>
 #include <ArduinoMqttClient.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
 #include <WiFiNINA.h>
 #include "arduino_secrets.h"
 
@@ -68,6 +70,11 @@ unsigned long  screen_refresh = 1000;            // Refresh rate oled screen ms
 unsigned long  interval_sending_data = 60000;  // Interval for sending data ms
 unsigned long  elapsed_time;                   // Elasped time intialized with random number
 
+/////////////////// Time setup /////////////////////
+
+// Define NTP Client to get time
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
 void setup() {
   // Initilaze pin
@@ -105,6 +112,15 @@ void setup() {
     // wait 10 seconds for connection:
     delay(10000);
 
+  // Initialize a NTPClient to get time
+  timeClient.begin();
+  // Set offset time in seconds to adjust for your timezone, for example:
+  // GMT +1 = 3600
+  // GMT +8 = 28800
+  // GMT -1 = -3600
+  // GMT 0 = 0
+  timeClient.setTimeOffset(7200);
+
   }
   
   print_setup_to_screen("Success connected to network " +String(ssid) + " ...",2000);
@@ -134,6 +150,16 @@ void setup() {
 }
 
 void loop() {
+  timeClient.update();
+  time_t epochTime = timeClient.getEpochTime();
+  Serial.print("Epoch Time: ");
+  Serial.println(epochTime);
+  
+  String formattedTime = timeClient.getFormattedTime();
+  Serial.print("Formatted Time: ");
+  Serial.println(formattedTime);  
+
+  
   // call poll() regularly to allow the library to send MQTT keep alive which
   // avoids being disconnected by the broker
   mqttClient.poll();
@@ -158,7 +184,7 @@ void loop() {
       temperatureC = temperatureK - 273;
 
       print_value_to_console(temperatureK, temperatureC, voltage_out);
-      print_value_to_screen(temperatureK, temperatureC);
+      print_value_to_screen(formattedTime.substring(0,5), temperatureC);
       delay(screen_refresh);
       elapsed_time = millis();
   }
@@ -244,17 +270,25 @@ void print_value_to_console(float _temperatureK, float _temperatureC, float _vol
 
 }
 
-void print_value_to_screen(float _temperatureK, float _temperatureC) {
+void print_value_to_screen(String _time, float _temperatureC) {
 
   // clear display
   display.clearDisplay();
 
-  // display temperature Celsius
+    // display Time
   display.setTextSize(1);
   display.setCursor(0, 0);
-  display.print("Temperature: ");
+  display.print("Time: ");
   display.setTextSize(2);
   display.setCursor(0, 10);
+  display.print(_time);
+  
+  // display temperature Celsius
+  display.setTextSize(1);
+  display.setCursor(0, 35);
+  display.print("Temperature: ");
+  display.setTextSize(2);
+  display.setCursor(0, 45);
   display.print(temperatureC);
   display.print(" ");
   display.setTextSize(1);
@@ -263,20 +297,8 @@ void print_value_to_screen(float _temperatureK, float _temperatureC) {
   display.setTextSize(2);
   display.print("C");
 
-  // display temperature Kelvin
-  display.setTextSize(1);
-  display.setCursor(0, 35);
-  display.print("Temperature: ");
-  display.setTextSize(2);
-  display.setCursor(0, 45);
-  display.print(temperatureK);
-  display.print(" ");
-  display.setTextSize(1);
-  display.cp437(true);
-  display.write(167);
-  display.setTextSize(2);
-  display.print("K");
 
+ 
   display.display();
 
 }
