@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt_client
 
 broker = 'test.mosquitto.org'
 port = 1883
-topic = 'ka_do_lab_temp'
+topic = 'KA/LAB/DO/TEMP'
 client_id = f'python-mqtt {random.randint(0, 1000)}'
 #username = 
 #password = 

@@ -76,7 +76,7 @@ python mqtt_client.py
 - ~Send data via MMQT~
 - Random dots on screen during load (removing vcc and ground seems to work)
 - ~Add wifi and loading status on screen during load~
-- Add time to the payload
+- ~Add time to the payload~
 - Test out PI integration
 
 
@@ -88,6 +88,7 @@ python mqtt_client.py
 - https://randomnerdtutorials.com/what-is-mqtt-and-how-it-works/
 - https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 - https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
+- https://developers.wia.io/release/things/mkr-wifi-1010
 
 **Rest API server**  
 - https://www.survivingwithandroid.com/esp32-rest-api-esp32-api-server/

@@ -4,18 +4,18 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <ArduinoJson.h>
 #include <ArduinoHttpClient.h>
 #include <ArduinoMqttClient.h>
 #include <NTPClient.h>
-#include <WiFiUdp.h>
 #include <WiFiNINA.h>
 #include "arduino_secrets.h"
 
 //////////////// Screen Setup ////////////////////////////////////////////////////////
 
-#define SCREEN_WIDTH 128      // OLED display width, in pixels
-#define SCREEN_HEIGHT 64     // OLED display height, in pixels
-#define OLED_RESET     -1   // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET -1    // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C
 // declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
@@ -33,7 +33,7 @@ String content_type;
 String payload;
 
 int port = 443;
-int status = WL_IDLE_STATUS;     // the Wifi radio's status
+int status = WL_IDLE_STATUS; // the Wifi radio's status
 WiFiSSLClient client;
 HttpClient http_client = HttpClient(client, server, port);
 
@@ -43,32 +43,34 @@ WiFiClient wifiClient;
 MqttClient mqttClient(wifiClient);
 
 const char broker[] = "test.mosquitto.org";
-int        broker_port     = 1883;
-const char topic[]  = "ka_do_lab_temp";
-
+int broker_port = 1883;
+const char topic[] = "KA/LAB/DO/TEMP";
 
 /////////////Sensor set up///////////////////////////////////////////
 
 unsigned long sum_sensor_value;
-unsigned long average_sensor_value;  
-const int num_readings = 1000;    // average  number of readings
+unsigned long average_sensor_value;
+const int num_readings = 1000; // average  number of readings
 
 const int sensor_pin = A0;
 float sensor_value;
 float voltage_out;
-float mv_per_kelvin = 10.0;    // LM335 proportional to temperature in Kelvin (ºK)  10mV/ºK
+float mv_per_kelvin = 10.0;   // LM335 proportional to temperature in Kelvin (ºK)  10mV/ºK
 float input_voltage = 5000.0; // For better acc. measure the exact value
 
 float temperatureC;
 float temperatureK;
-float temp_offset = 157;     //Set to zero if calibrated
+float temp_offset = 157; //Set to zero if calibrated
 float ad_converter = 1023;
-float temp_alert = -10;     // Temperature value to send alert
+float temp_alert = -10; // Temperature value to send alert
 
 unsigned long loop_timer;
-unsigned long  screen_refresh = 1000;            // Refresh rate oled screen ms
-unsigned long  interval_sending_data = 60000;  // Interval for sending data ms
-unsigned long  elapsed_time;                   // Elasped time intialized with random number
+unsigned long screen_refresh = 1000;         // Refresh rate oled screen ms
+unsigned long interval_sending_data = 60000; // Interval for sending data ms
+unsigned long elapsed_time;                  // Elasped time intialized with random number
+
+StaticJsonDocument<200> jsonBuffer;
+JsonObject doc = jsonBuffer.to<JsonObject>();
 
 /////////////////// Time setup /////////////////////
 
@@ -76,18 +78,21 @@ unsigned long  elapsed_time;                   // Elasped time intialized with r
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org");
 
-void setup() {
+void setup()
+{
   // Initilaze pin
-  delay(100);       //"Stabilization time".   Probably not necessary  
+  delay(100); //"Stabilization time".   Probably not necessary
   pinMode(sensor_pin, INPUT);
-  delay(100);       //"Stabilization time".   Probably not necessary  
+  delay(100); //"Stabilization time".   Probably not necessary
 
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
-  delay(100);       //"Stabilization time".   Probably not necessary
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+  delay(100); //"Stabilization time".   Probably not necessary
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
+  {
     Serial.println(F("SSD1306 allocation failed"));
-    for (;;);
+    for (;;)
+      ;
   }
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
@@ -97,34 +102,35 @@ void setup() {
   display.setTextColor(WHITE);
 
   // Connect to Wifi network
-  while (!Serial);
+  while (!Serial)
+    ;
 
   // attempt to connect to Wifi network:
-  while (status != WL_CONNECTED) {
+  while (status != WL_CONNECTED)
+  {
     Serial.print("[LOG]: Attempting to connect to network: ");
     Serial.println(ssid);
-    
-    print_setup_to_screen("Attempting to connect to network " +String(ssid) + " ...",2000);
-    
+
+    print_setup_to_screen("Attempting to connect to network " + String(ssid) + " ...", 2000);
+
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
 
     // wait 10 seconds for connection:
     delay(10000);
 
-  // Initialize a NTPClient to get time
-  timeClient.begin();
-  // Set offset time in seconds to adjust for your timezone, for example:
-  // GMT +1 = 3600
-  // GMT +8 = 28800
-  // GMT -1 = -3600
-  // GMT 0 = 0
-  timeClient.setTimeOffset(7200);
-
+    // Initialize a NTPClient to get time
+    timeClient.begin();
+    // Set offset time in seconds to adjust for your timezone, for example:
+    // GMT +1 = 3600
+    // GMT +8 = 28800
+    // GMT -1 = -3600
+    // GMT 0 = 0
+    timeClient.setTimeOffset(7200);
   }
-  
-  print_setup_to_screen("Success connected to network " +String(ssid) + " ...",2000);
-  
+
+  print_setup_to_screen("Success connected to network " + String(ssid) + " ...", 2000);
+
   Serial.println("[LOG]: You're connected to the network");
   Serial.println("----------------------------------------");
   get_wifi_connection_info();
@@ -132,97 +138,102 @@ void setup() {
   Serial.print("[LOG]: Attempting to connect to the MQTT broker: ");
   Serial.println(broker);
 
-  if (!mqttClient.connect(broker, broker_port)) {
+  if (!mqttClient.connect(broker, broker_port))
+  {
     Serial.print("[ERROR] MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
 
-    print_setup_to_screen("[ERROR] MQTT connection failed! ...",5000);
+    print_setup_to_screen("[ERROR] MQTT connection failed! ...", 5000);
 
-    while (1);
+    while (1)
+      ;
   }
-  
-  print_setup_to_screen("Success connected to MQTT broker!  " +String(broker) + " ...",5000);
-  
+
+  print_setup_to_screen("Success connected to MQTT broker!  " + String(broker) + " ...", 5000);
+
   Serial.println("[LOG]: You're connected to the MQTT broker!");
   Serial.println();
   Serial.println("----------------------------------------");
-  
 }
 
-void loop() {
+void loop()
+{
   timeClient.update();
   time_t epochTime = timeClient.getEpochTime();
   Serial.print("Epoch Time: ");
   Serial.println(epochTime);
-  
+
   String formattedTime = timeClient.getFormattedTime();
   Serial.print("Formatted Time: ");
-  Serial.println(formattedTime);  
+  Serial.println(formattedTime);
 
-  
   // call poll() regularly to allow the library to send MQTT keep alive which
   // avoids being disconnected by the broker
   mqttClient.poll();
-  loop_timer = millis();       // Start loop timer ms
+  loop_timer = millis(); // Start loop timer ms
   elapsed_time = millis();
   // Screen refresh loop
-  while (elapsed_time - loop_timer < interval_sending_data) {
-    sum_sensor_value = 0;        //Initialize/reset
-    //Smoothing sensor data. Take num_readings, find  average.  
+  while (elapsed_time - loop_timer < interval_sending_data)
+  {
+    sum_sensor_value = 0; //Initialize/reset
+    //Smoothing sensor data. Take num_readings, find  average.
     for (int i = 0; i < num_readings; i++)
     {
       // Get sensor value
       sensor_value = analogRead(sensor_pin);
       sum_sensor_value = sum_sensor_value + sensor_value;
     }
-      
-      average_sensor_value = (sum_sensor_value/num_readings);      
-      voltage_out = (average_sensor_value * input_voltage) / ad_converter;
 
-      // calculate temperature for LM335
-      temperatureK = (voltage_out / mv_per_kelvin) - temp_offset;
-      temperatureC = temperatureK - 273;
+    average_sensor_value = (sum_sensor_value / num_readings);
+    voltage_out = (average_sensor_value * input_voltage) / ad_converter;
 
-      print_value_to_console(temperatureK, temperatureC, voltage_out);
-      print_value_to_screen(formattedTime.substring(0,5), temperatureC);
-      delay(screen_refresh);
-      elapsed_time = millis();
+    // calculate temperature for LM335
+    temperatureK = (voltage_out / mv_per_kelvin) - temp_offset;
+    temperatureC = temperatureK - 273;
+
+    print_value_to_console(temperatureK, temperatureC, voltage_out);
+    print_value_to_screen(formattedTime.substring(0, 5), temperatureC);
+    delay(screen_refresh);
+    elapsed_time = millis();
   }
   Serial.println("----------------------------------------");
   Serial.print("[LOG]: Sending message to topic: ");
   Serial.println(topic);
 
-  // send message, the Print interface can be used to set the message contents
-  mqttClient.beginMessage(topic);
-  mqttClient.print(temperatureC);
-  mqttClient.endMessage();
+  // Publish the msg
+  doc["Alias"] = "Temp_Room";
+  doc["Timestamp"] = epochTime;
+  doc["Value"] = temperatureC;
+  send_mqtt_as_json(doc);
 
-  if (temperatureC >= temp_alert) {
-  // Send to discord
-  Serial.println("----------------------------------------");
-  Serial.print("[LOG]: Temperature greater than ");
-  Serial.print(String(temp_alert));
-  Serial.println("ºC ... sending alert.");
-  Serial.print("[LOG]: Attempting to connect to: ");
-  Serial.println(server);
-  Serial.println("[LOG]: Making POST request");
+  // Send alert to discord
+  if (temperatureC >= temp_alert)
+  {
+    Serial.println("----------------------------------------");
+    Serial.print("[LOG]: Temperature greater than ");
+    Serial.print(String(temp_alert));
+    Serial.println("ºC ... sending alert.");
+    Serial.print("[LOG]: Attempting to connect to: ");
+    Serial.println(server);
+    Serial.println("[LOG]: Making POST request");
 
-  content_type  = "application/json";
-  content = String(temperatureC, 2);
-  payload = "{\"content\":\"" + content + "\", \"tts\":" + discord_tts + "}";
-  Serial.print("[LOG]: Formatted payload: ");
-  Serial.println(payload);
+    content_type = "application/json";
+    content = String(temperatureC, 2);
+    payload = "{\"content\":\"" + content + "\", \"tts\":" + discord_tts + "}";
+    Serial.print("[LOG]: Formatted payload: ");
+    Serial.println(payload);
 
-  post_webhook(payload, content_type, discord_webhook);
+    post_webhook(payload, content_type, discord_webhook);
 
-  Serial.print("[LOG]: Waiting ");
-  Serial.print(String(interval_sending_data / 1000));
-  Serial.println(" seconds before next transmission.");
-  Serial.println("----------------------------------------");
+    Serial.print("[LOG]: Waiting ");
+    Serial.print(String(interval_sending_data / 1000));
+    Serial.println(" seconds before next transmission.");
+    Serial.println("----------------------------------------");
   }
 }
 
-void post_webhook(String content_, String content_type_, String webhook_) {
+void post_webhook(String content_, String content_type_, String webhook_)
+{
 
   http_client.post(webhook_, content_type_, content_);
   // read the status code and body of the response
@@ -235,8 +246,8 @@ void post_webhook(String content_, String content_type_, String webhook_) {
   Serial.println(response);
 }
 
-
-void get_wifi_connection_info() {
+void get_wifi_connection_info()
+{
   Serial.println("Board Information:");
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
@@ -259,7 +270,8 @@ void get_wifi_connection_info() {
   Serial.println();
 }
 
-void print_value_to_console(float _temperatureK, float _temperatureC, float _voltage_out) {
+void print_value_to_console(float _temperatureK, float _temperatureC, float _voltage_out)
+{
 
   Serial.print("[LOG]: Temperature(K): ");
   Serial.print(_temperatureK);
@@ -267,22 +279,22 @@ void print_value_to_console(float _temperatureK, float _temperatureC, float _vol
   Serial.print(_temperatureC);
   Serial.print("  Voltage(mV): ");
   Serial.println(_voltage_out);
-
 }
 
-void print_value_to_screen(String _time, float _temperatureC) {
+void print_value_to_screen(String _time, float _temperatureC)
+{
 
   // clear display
   display.clearDisplay();
 
-    // display Time
+  // display Time
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.print("Time: ");
   display.setTextSize(2);
   display.setCursor(0, 10);
   display.print(_time);
-  
+
   // display temperature Celsius
   display.setTextSize(1);
   display.setCursor(0, 35);
@@ -297,18 +309,14 @@ void print_value_to_screen(String _time, float _temperatureC) {
   display.setTextSize(2);
   display.print("C");
 
-
- 
   display.display();
-
 }
 
-void print_setup_to_screen(String _status, int _delay) {
+void print_setup_to_screen(String _status, int _delay)
+{
 
   // clear display
   display.clearDisplay();
-
-  
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.print("Status: ");
@@ -316,6 +324,24 @@ void print_setup_to_screen(String _status, int _delay) {
   display.setCursor(0, 10);
   display.print(_status);
   display.display();
-  delay(_delay); 
+  delay(_delay);
+}
 
+void send_mqtt_as_json(JsonObject &data)
+{
+  String dataStr = "";
+  serializeJson(data, dataStr);
+  mqttClient.beginMessage(topic);
+  mqttClient.print(dataStr);
+  mqttClient.endMessage();
+
+  //httpClient.beginRequest();
+  //httpClient.post(path);
+  //httpClient.sendHeader("Content-Type", "application/json");
+  //httpClient.sendHeader("Content-Length", dataStr.length());
+  //httpClient.sendHeader("Authorization", "Bearer "  +    String(device_secret_key));
+  //httpClient.beginBody();
+  //httpClient.print(dataStr);
+  //httpClient.endRequest();
+  //client.flush();
 }
