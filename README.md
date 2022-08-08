@@ -1,10 +1,10 @@
 # Iot Lab Temperature Sensor
 
-IOT sensor to monitor the cooling room temperature.
-* High tempureature alert is sent via webhook to Discord/MS TEAMS
-* Log the values to the PI historian
+IOT sensor to monitor the cooling room temperature. Main aim is to:  
+* Notify user on mobile when there is a high tempureature alert (send via webhook to Discord/MS TEAMS)
+* Log the values (PI historian/datalake)
 
-**Pinout Arduino MKR WIFI 1010**  
+**Arduino MKR WIFI 1010 and LM335A Temperature Sensor**  
 <p align="center">
   <img src="imgs/img.JPEG" >
 </p>
@@ -16,6 +16,7 @@ IOT sensor to monitor the cooling room temperature.
 - [Arduino MKR WIFI 1010](https://www.computersalg.dk/i/4892362/arduino-mkr-wifi-1010-arm-cortex-m0-48-mhz-0-256-mb-32-kb-arduino-25-x-61-5-mm)  
 - [LM335A - Precision Temperature Sensor](https://elektronik-lavpris.dk/p100429/lm335az-temp-sensor-40-100c-to92-05)  
 - [OLED SPI Display SSD1306](https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/)
+- 2.2K Resistor  
 
 ## Getting started with the hardware
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
@@ -74,7 +75,7 @@ python mqtt_client.py
 - Test connecting to teams (blocked by getting the correct domain)
 - ~Average temp over a period~
 - ~Send data via MMQT~
-- Random dots on screen during load (removing vcc and ground seems to work)
+- Random dots on screen during load (puttin the vcc and in the reset seems to work)  
 - ~Add wifi and loading status on screen during load~
 - ~Add time to the payload~
 - Test out PI integration
