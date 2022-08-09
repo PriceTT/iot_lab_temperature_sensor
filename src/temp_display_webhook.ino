@@ -46,6 +46,8 @@ const char broker[] = "test.mosquitto.org";
 int broker_port = 1883;
 const char topic[] = "KA/LAB/DO/TEMP";
 
+int counter = 0;
+int mqtt_con;
 /////////////Sensor set up///////////////////////////////////////////
 
 unsigned long sum_sensor_value;
@@ -76,7 +78,7 @@ JsonObject doc = jsonBuffer.to<JsonObject>();
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
+NTPClient timeClient(ntpUDP, "dk.pool.ntp.org");
 
 void setup()
 {
@@ -116,8 +118,8 @@ void setup()
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
 
-    // wait 10 seconds for connection:
-    delay(10000);
+    // wait 2 seconds for connection:
+    delay(2000);
 
     // Initialize a NTPClient to get time
     timeClient.begin();
@@ -137,23 +139,29 @@ void setup()
   Serial.println("----------------------------------------");
   Serial.print("[LOG]: Attempting to connect to the MQTT broker: ");
   Serial.println(broker);
+  
+  
+  mqtt_con = mqttClient.connect(broker, broker_port);
 
-  if (!mqttClient.connect(broker, broker_port))
+  while (!mqtt_con && counter < 3 )
   {
     Serial.print("[ERROR] MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
 
     print_setup_to_screen("[ERROR] MQTT connection failed! ...", 5000);
-
-    while (1)
-      ;
+  
+    // wait 2 seconds for connection:
+    counter = counter +1;
+    delay(2000);
   }
 
+  if (mqtt_con = 1) {
   print_setup_to_screen("Success connected to MQTT broker!  " + String(broker) + " ...", 5000);
 
   Serial.println("[LOG]: You're connected to the MQTT broker!");
   Serial.println();
   Serial.println("----------------------------------------");
+  }
 }
 
 void loop()
@@ -196,16 +204,18 @@ void loop()
     delay(screen_refresh);
     elapsed_time = millis();
   }
+  if (mqttClient.connected()){
   Serial.println("----------------------------------------");
   Serial.print("[LOG]: Sending message to topic: ");
   Serial.println(topic);
-
-  // Publish the msg
+   // TODO add exception handling
+  // Publish the msg 
+  
   doc["Alias"] = "Temp_Room";
   doc["Timestamp"] = epochTime;
   doc["Value"] = temperatureC;
   send_mqtt_as_json(doc);
-
+  }
   // Send alert to discord
   if (temperatureC >= temp_alert)
   {
