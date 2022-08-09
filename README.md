@@ -40,7 +40,7 @@ Note in the future purchace the [I2C version of the OLED](https://elektronik-lav
 ## Getting started with the mqtt client
 1. Clone this GIT repository:
 ```
-git@github.com:PriceTT/iot_lab_temperature_sensor.git
+git clone git@github.com:PriceTT/iot_lab_temperature_sensor.git
 ```
 ___
 
