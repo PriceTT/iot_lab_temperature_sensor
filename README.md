@@ -25,8 +25,10 @@ IOT sensor to monitor the cooling room temperature. Main aim is to:
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
 
 **Connecting to AWS IoT**  
-https://docs.arduino.cc/tutorials/mkr-wifi-1010/securely-connecting-an-arduino-mkr-wifi-1010-to-aws-iot-core
-
+https://docs.arduino.cc/tutorials/mkr-wifi-1010/securely-connecting-an-arduino-mkr-wifi-1010-to-aws-iot-core 
+<p align="center">
+  <img src="imgs/awsmqtt.png" >
+</p>
 
 **Note:**   
 
@@ -83,12 +85,15 @@ python mqtt_client.py
 
 ## TODO  
 - Test connecting to teams (blocked by getting the correct domain)
+- Test connecting to aws mqtt topics with python
+- Test on NZ network
+- Test out PI integration
+- Random dots on screen during load (puttin the vcc and in the reset seems to work)  
 - ~Average temp over a period~
 - ~Send data via MMQT~
-- Random dots on screen during load (puttin the vcc and in the reset seems to work)  
 - ~Add wifi and loading status on screen during load~
 - ~Add time to the payload~
-- Test out PI integration
+
 
 
 ## Further Reading and Info
