@@ -46,6 +46,8 @@ const char broker[] = "test.mosquitto.org";
 int broker_port = 1883;
 const char topic[] = "KA/LAB/DO/TEMP";
 
+int counter = 0;
+int mqtt_con;
 /////////////Sensor set up///////////////////////////////////////////
 
 unsigned long sum_sensor_value;
@@ -76,17 +78,18 @@ JsonObject doc = jsonBuffer.to<JsonObject>();
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "pool.ntp.org");
+NTPClient timeClient(ntpUDP, "dk.pool.ntp.org");
 
 void setup()
 {
+  //Initialize serial and wait for port to open:
+  Serial.begin(9600);
   // Initilaze pin
   delay(100); //"Stabilization time".   Probably not necessary
   pinMode(sensor_pin, INPUT);
   delay(100); //"Stabilization time".   Probably not necessary
 
-  //Initialize serial and wait for port to open:
-  Serial.begin(9600);
+  
   delay(100); //"Stabilization time".   Probably not necessary
   if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
   {
@@ -96,11 +99,19 @@ void setup()
   }
   // Show initial display buffer contents on the screen --
   // the library initializes this with an Adafruit splash screen.
+  delay(100);
+  display.ssd1306_command(SSD1306_DISPLAYOFF); // To switch display off
+  delay(100);
+  display.ssd1306_command(SSD1306_DISPLAYON); // To switch display back on
+  delay(100);
+  Serial.print("[LOG]: Loading display");
   display.display();
-  delay(2000);
+  delay(100);
   display.clearDisplay();
   display.setTextColor(WHITE);
-
+  
+  Serial.println("[LOG]: Display color set");
+  
   // Connect to Wifi network
   while (!Serial)
     ;
@@ -109,15 +120,14 @@ void setup()
   while (status != WL_CONNECTED)
   {
     Serial.print("[LOG]: Attempting to connect to network: ");
-    Serial.println(ssid);
-
+    Serial.println(ssid); 
     print_setup_to_screen("Attempting to connect to network " + String(ssid) + " ...", 2000);
 
     // Connect to WPA/WPA2 network:
     status = WiFi.begin(ssid, pass);
 
-    // wait 10 seconds for connection:
-    delay(10000);
+    // wait 2 seconds for connection:
+    delay(2000);
 
     // Initialize a NTPClient to get time
     timeClient.begin();
@@ -137,23 +147,29 @@ void setup()
   Serial.println("----------------------------------------");
   Serial.print("[LOG]: Attempting to connect to the MQTT broker: ");
   Serial.println(broker);
+  
+  
+  mqtt_con = mqttClient.connect(broker, broker_port);
 
-  if (!mqttClient.connect(broker, broker_port))
+  while (!mqtt_con && counter < 3 )
   {
     Serial.print("[ERROR] MQTT connection failed! Error code = ");
     Serial.println(mqttClient.connectError());
 
     print_setup_to_screen("[ERROR] MQTT connection failed! ...", 5000);
-
-    while (1)
-      ;
+  
+    // wait 2 seconds for connection:
+    counter = counter +1;
+    delay(2000);
   }
 
+  if (mqtt_con = 1) {
   print_setup_to_screen("Success connected to MQTT broker!  " + String(broker) + " ...", 5000);
 
   Serial.println("[LOG]: You're connected to the MQTT broker!");
   Serial.println();
   Serial.println("----------------------------------------");
+  }
 }
 
 void loop()
@@ -196,16 +212,18 @@ void loop()
     delay(screen_refresh);
     elapsed_time = millis();
   }
+  if (mqttClient.connected()){
   Serial.println("----------------------------------------");
   Serial.print("[LOG]: Sending message to topic: ");
   Serial.println(topic);
-
-  // Publish the msg
+   // TODO add exception handling
+  // Publish the msg 
+  
   doc["Alias"] = "Temp_Room";
   doc["Timestamp"] = epochTime;
   doc["Value"] = temperatureC;
   send_mqtt_as_json(doc);
-
+  }
   // Send alert to discord
   if (temperatureC >= temp_alert)
   {
@@ -248,6 +266,7 @@ void post_webhook(String content_, String content_type_, String webhook_)
 
 void get_wifi_connection_info()
 {
+  byte mac[6];  // the MAC address of your Wifi Module
   Serial.println("Board Information:");
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
@@ -268,6 +287,20 @@ void get_wifi_connection_info()
   Serial.print("Encryption Type:");
   Serial.println(encryption, HEX);
   Serial.println();
+
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[5], HEX);
+  Serial.print(":");
+  Serial.print(mac[4], HEX);
+  Serial.print(":");
+  Serial.print(mac[3], HEX);
+  Serial.print(":");
+  Serial.print(mac[2], HEX);
+  Serial.print(":");
+  Serial.print(mac[1], HEX);
+  Serial.print(":");
+  Serial.println(mac[0], HEX);
 }
 
 void print_value_to_console(float _temperatureK, float _temperatureC, float _voltage_out)
