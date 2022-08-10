@@ -18,26 +18,36 @@ IOT sensor to monitor the cooling room temperature. Main aim is to:
 - [OLED SPI Display SSD1306](https://elektronik-lavpris.dk/p143602/modu0052-ssd1306-128x64-pixel-uoled-display-module-blue/)
 - 2.2K Resistor  
 
-## Getting started with the hardware
+## Getting started with the hardware   
+
+**Temperature sensor and oled**
 - https://randomnerdtutorials.com/arduino-lm35-lm335-lm34-temperature-sensor/
 - https://elektronik-lavpris.dk/files/sup2/LM135.pdf
 
-**Note**: Create a file called arduino_secrets.h in the scr folder with your credentials:  
+**Connecting to AWS IoT**  
+https://docs.arduino.cc/tutorials/mkr-wifi-1010/securely-connecting-an-arduino-mkr-wifi-1010-to-aws-iot-core
+
+
+**Note:**   
+
+1. Create a file called arduino_secrets.h in the temp_display_webhook folder with your credentials:  
 ```
 #define SECRET_SSID "my_sid"  
 #define SECRET_PASS "my_password"  
 #define SECRET_WEBHOOK "https://discord.com/api/webhooks/xxx"  
 #define SECRET_TTS "true"  
 #define SECRET_WEBHOOK_MS "https://outlook.webhook.office.com/webhookb2/xxx"  
+// Fill in the hostname of your AWS IoT broker
+#define SECRET_BROKER "xxxxxxxxxxxxxx.iot.xx-xxxx-x.amazonaws.com"
+// Fill in the boards public certificate
+const char SECRET_CERTIFICATE[] = R"(
+-----BEGIN CERTIFICATE-----
+-----END CERTIFICATE-----
+)";
 ```
+2. SPI should be faster than I2C but I could not get it to work. Hence, the display was [converted to I2C](https://www.instructables.com/OLED-Tutorial-Convert-SPI-to-I2C/). For futer projects purchace the [I2C version of the OLED](https://elektronik-lavpris.dk/p148473/sbc-oled01-oled-display-for-arduino-raspberry-pi-or-other-single-board/)  
 
-
-**Convert SPI OLED to I2C**  
-SPI should be faster than I2C but I could not get it to work. Hence, the display was [converted to I2C](https://www.instructables.com/OLED-Tutorial-Convert-SPI-to-I2C/).     
-
-Note in the future purchace the [I2C version of the OLED](https://elektronik-lavpris.dk/p148473/sbc-oled01-oled-display-for-arduino-raspberry-pi-or-other-single-board/)  
-
-## Getting started with the mqtt client
+## Subscribing to a MQTT topic using python   
 1. Clone this GIT repository:
 ```
 git clone git@github.com:PriceTT/iot_lab_temperature_sensor.git
