@@ -36,6 +36,7 @@ const char* certificate  = SECRET_CERTIFICATE;
 String content;
 String content_type;
 String payload;
+byte mac[6];  
 
 int discord_port = 443;
 int status = WL_IDLE_STATUS; // the Wifi radio's status
@@ -47,9 +48,10 @@ int status = WL_IDLE_STATUS; // the Wifi radio's status
 WiFiClient    wifiClient;            // Used for the TCP socket connection
 BearSSLClient sslClient(wifiClient); // Used for SSL/TLS connection, integrates with ECC508
 MqttClient    mqttClient(sslClient);
-HttpClient http_client = HttpClient(wifiClient, server, discord_port);
+WiFiSSLClient client;
+HttpClient http_client = HttpClient(client, server, discord_port);
 int broker_port = 8883;
-const char topic[] = "KA/LAB/DO/TEMP";
+const String publish_topic = "KA/LAB/DO/TEMP";
 
 int counter = 0;
 /////////////Sensor set up///////////////////////////////////////////
@@ -78,6 +80,7 @@ unsigned long elapsed_time;                  // Elasped time intialized with ran
 
 time_t  epochTime;
 String formattedTime;
+const int gmt_offset = 7200;
 
 StaticJsonDocument<200> jsonBuffer;
 JsonObject doc = jsonBuffer.to<JsonObject>();
@@ -100,39 +103,23 @@ void setup()
   delay(100); //"Stabilization time".   Probably not necessary
 
   initialize_oled();
+  delay(100);
   validate_server_certificate();
 
-  // attempt to connect to Wifi network:
-  while (status != WL_CONNECTED)
-  {
-    Serial.print("[LOG]: Attempting to connect to network: ");
-    Serial.println(ssid);
 
-    print_setup_to_screen("Attempting to connect to network " + String(ssid) + " ...", 100);
-
-    // Connect to WPA/WPA2 network:
-    status = WiFi.begin(ssid, pass);
-
-    // wait 2 seconds for connection:
-    delay(5000);
-
-    // Initialize a NTPClient to get time
+  if (WiFi.status() != WL_CONNECTED) {
+    connectWiFi();
     initialize_ntpclient();
   }
 
-  print_setup_to_screen("Success connected to network " + String(ssid) + " ...", 2000);
-
-  Serial.println("[LOG]: You're connected to the network");
   Serial.println("----------------------------------------");
   get_wifi_connection_info();
   Serial.println("----------------------------------------");
 
-
-
 }
 
-void loop()
-{
+void loop(){
+
    if (WiFi.status() != WL_CONNECTED) {
     connectWiFi();
     initialize_ntpclient();
@@ -155,16 +142,16 @@ void loop()
     print_value_to_console(temperatureC, voltage_out);
     get_current_time(epochTime, formattedTime ); 
     print_value_to_screen(formattedTime.substring(0, 5), temperatureC);
-       
-    
+           
     elapsed_time = millis();
   }
-
+  
+  // Publish json payload
   doc["Alias"] = "Temp_Room";
   doc["Timestamp"] = epochTime;
-  doc["Value"] = temperatureC;
-  
+  doc["Value"] = temperatureC;  
   publishMessage(doc);
+
   // Send alert to discord
   if (temperatureC >= temp_alert)
   {
@@ -202,7 +189,7 @@ void initialize_oled(){
   
   // Show initial display buffer contents on the screen with default splash screen --
   display.display();
-  delay(100);
+  delay(1000);
   display.ssd1306_command(SSD1306_DISPLAYOFF); // To switch display off
   delay(100);
   display.ssd1306_command(SSD1306_DISPLAYON); // To switch display back on
@@ -246,6 +233,21 @@ void get_wifi_connection_info()
   byte encryption = WiFi.encryptionType();
   Serial.print("Encryption Type:");
   Serial.println(encryption, HEX);
+  Serial.println();
+
+  WiFi.macAddress(mac);
+  Serial.print("MAC: ");
+  Serial.print(mac[5], HEX);
+  Serial.print(":");
+  Serial.print(mac[4], HEX);
+  Serial.print(":");
+  Serial.print(mac[3], HEX);
+  Serial.print(":");
+  Serial.print(mac[2], HEX);
+  Serial.print(":");
+  Serial.print(mac[1], HEX);
+  Serial.print(":");
+  Serial.println(mac[0], HEX);
   Serial.println();
 }
 
@@ -345,15 +347,18 @@ void initialize_ntpclient(){
     // GMT +8 = 28800
     // GMT -1 = -3600
     // GMT 0 = 0
-    timeClient.setTimeOffset(7200);
+    timeClient.setTimeOffset(gmt_offset);
 
 }
 
 
 void connectWiFi() {
-  Serial.print("Attempting to connect to SSID: ");
+  int i = 
+  Serial.print("[LOG]: Attempting to connect to SSID: ");
   Serial.print(ssid);
-  Serial.print(" ");
+  Serial.println(" ");
+
+  print_setup_to_screen("Connecting to Wifi " + String(ssid) + " ...", 100);
 
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
@@ -362,14 +367,16 @@ void connectWiFi() {
   }
   Serial.println();
 
-  Serial.println("You're connected to the network");
+  Serial.println("[LOG]: You're connected to the network");
   Serial.println();
+  print_setup_to_screen("Success: Connected to Wifi " + String(ssid) + " ...", 2000);
 }
 
 void connectMQTT() {
-  Serial.print("Attempting to MQTT broker: ");
+  Serial.print("[LOG]: Attempting to MQTT broker: ");
   Serial.print(broker);
   Serial.println(" ");
+  print_setup_to_screen("Connecting to MQTT broker!  " + String(broker) + " ...", 2000);
 
   while (!mqttClient.connect(broker, 8883)) {
     // failed, retry
@@ -378,8 +385,9 @@ void connectMQTT() {
   }
   Serial.println();
 
-  Serial.println("You're connected to the MQTT broker");
+  Serial.println("[LOG]: You're connected to the MQTT broker");
   Serial.println();
+  print_setup_to_screen("Success connected to MQTT broker!  " + String(broker) + " ...", 2000);
 
   // subscribe to a topic
   mqttClient.subscribe("arduino/incoming");
@@ -389,9 +397,9 @@ void publishMessage(JsonObject &data) {
   
   String dataStr = "";
   serializeJson(data, dataStr);
-  Serial.println("Publishing message" + dataStr);
+  Serial.println("[LOG]: Publishing message" + dataStr);
   // send message, the Print interface can be used to set the message contents
-  mqttClient.beginMessage("arduino/outgoing");
+  mqttClient.beginMessage(publish_topic);
   mqttClient.print(dataStr);
   mqttClient.endMessage();
   
@@ -399,7 +407,7 @@ void publishMessage(JsonObject &data) {
 
 void onMessageReceived(int messageSize) {
   // we received a message, print out the topic and contents
-  Serial.print("Received a message with topic '");
+  Serial.print("[LOG]: Received a message with topic '");
   Serial.print(mqttClient.messageTopic());
   Serial.print("', length ");
   Serial.print(messageSize);
@@ -439,10 +447,10 @@ void get_current_time(time_t & _epochTime,String & _formattedTime ){
   timeClient.update();
   _epochTime = timeClient.getEpochTime();
   _formattedTime = timeClient.getFormattedTime();
-  Serial.print("[LOG]: Epoch time: ");
-  Serial.print(_epochTime);
-  Serial.print("  Formatted time: ");
-  Serial.println(_formattedTime);
+  //Serial.print("[LOG]: Epoch time: ");
+  //Serial.print(_epochTime);
+  //Serial.print("  Formatted time: ");
+  //Serial.println(_formattedTime);
   
   }
 
