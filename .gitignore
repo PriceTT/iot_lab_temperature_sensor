@@ -18,3 +18,4 @@ nohup.out
 venv/
 .vscode*
 venv/
+arduino_secrets.h
