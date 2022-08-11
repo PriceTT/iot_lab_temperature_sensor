@@ -210,7 +210,7 @@ void send_message_to_discord() {
 }
 
 void get_wifi_connection_info() {
-  
+
   Serial.println("Board Information:");
   // print your board's IP address:
   IPAddress ip = WiFi.localIP();
@@ -346,41 +346,46 @@ void initialize_ntpclient() {
 
 
 void connectWiFi() {
-  int i =
-    Serial.print("[LOG]: Attempting to connect to SSID: ");
+  String _status = "Connecting to Wifi " + String(ssid) + " .";
+  Serial.print("[LOG]: Attempting to connect to SSID: ");
   Serial.print(ssid);
-  Serial.println(" ");
+  Serial.print(" ");
 
-  print_setup_to_screen("Connecting to Wifi " + String(ssid) + " ...", 100);
+  print_setup_to_screen(_status, 100);
 
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
+    _status = _status + ".";
     Serial.print(".");
+    print_setup_to_screen(_status, 100);
     delay(5000);
   }
   Serial.println();
 
   Serial.println("[LOG]: You're connected to the network");
   Serial.println();
-  print_setup_to_screen("Success: Connected to Wifi " + String(ssid) + " ...", 2000);
+  print_setup_to_screen("Success: Connected to Wifi " + String(ssid), 2000);
 }
 
 void connectMQTT() {
+  String _status = "Connecting to MQTT broker!  " + String(broker) + " .";
   Serial.print("[LOG]: Attempting to MQTT broker: ");
   Serial.print(broker);
-  Serial.println(" ");
-  print_setup_to_screen("Connecting to MQTT broker!  " + String(broker) + " ...", 2000);
+  Serial.print(" ");
+  print_setup_to_screen(_status, 2000);
 
   while (!mqttClient.connect(broker, 8883)) {
     // failed, retry
+    _status = _status + ".";
     Serial.print(".");
+    print_setup_to_screen(_status, 100);
     delay(5000);
   }
   Serial.println();
 
   Serial.println("[LOG]: You're connected to the MQTT broker");
   Serial.println();
-  print_setup_to_screen("Success connected to MQTT broker!  " + String(broker) + " ...", 2000);
+  print_setup_to_screen("Success connected to MQTT broker!  " + String(broker), 2000);
 
   // subscribe to a topic
   mqttClient.subscribe("arduino/incoming");
