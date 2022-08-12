@@ -133,6 +133,8 @@ python mqtt_client.py
 - https://www.sarathiblog.com/SPI-oled-arduino.html
 - https://www.engineersgarage.com/arduino-ssd1306-oled-display/
 - https://circuitdigest.com/microcontroller-projects/arduino-ssd1306-oled-display
+- https://www.electronics-lab.com/project/intelligent-power-switch-for-the-arduino/
+- https://iotexpert.com/debugging-ssd1306-display-problems/
 
 **Temperature Sensors**  
 - https://create.arduino.cc/projecthub/sarful/serial-temperature-sensor-arduino-workshop-aab43a?ref=part&ref_id=8233&offset=149  
