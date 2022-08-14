@@ -105,6 +105,7 @@ python mqtt_client.py
 - https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/
 - https://randomnerdtutorials.com/esp8266-nodemcu-date-time-ntp-client-server-arduino/
 - https://developers.wia.io/release/things/mkr-wifi-1010
+- https://aws.amazon.com/blogs/compute/visualizing-sensor-data-in-amazon-quicksight/
 
 **Rest API server**  
 - https://www.survivingwithandroid.com/esp32-rest-api-esp32-api-server/
