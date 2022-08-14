@@ -19,3 +19,6 @@ venv/
 .vscode*
 venv/
 arduino_secrets.h
+*.cert
+*.pem
+*.key

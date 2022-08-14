@@ -82,13 +82,27 @@ python mqtt_client.py
   <img src="imgs/mqtt.png" >
 </p>
 
+**Note**  
+1. Create a file called aws_config.pem in the certificates folder to hold any senstive info:    
+```
+[config]
+broker=xxxxxxxxxxxxxx.iot.xx-xxxx-x.amazonaws.com
+client_id =python_subscribe
+```
+2. The folowing files should be stored in the certificates folder and are created using the [AWS IOT console](https://docs.aws.amazon.com/iot/latest/developerguide/device-certs-create.html)  
+```
+caPath = "./certificates/AmazonRootCA1.pem"
+certPath = "./certificates/cert.pem"
+keyPath = "./certificates/private.pem.key"
+```
+
 
 ## TODO  
 - Test connecting to teams (blocked by getting the correct domain)
-- Test connecting to aws mqtt topics with python
 - Test on NZ network
 - Test out PI integration
 - Random dots on screen during load (puttin the vcc and in the reset seems to work)  
+- ~Test connecting to aws mqtt topics with python~  
 - ~Average temp over a period~
 - ~Send data via MMQT~
 - ~Add wifi and loading status on screen during load~
