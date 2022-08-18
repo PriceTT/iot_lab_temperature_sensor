@@ -43,6 +43,10 @@ int status = WL_IDLE_STATUS;  // the Wifi radio's status
 //WiFiSSLClient client;
 //HttpClient http_client = HttpClient(client, server, discord_port);
 
+// https://www.ascii-codes.com/ connected 3 (♥), unconnected 21 (§)
+int connected_internet = 3;
+int connected_mqtt = 3;
+
 //////////////////////////////// MQTT setup ///////////////////////////////////////////
 
 WiFiClient wifiClient;                // Used for the TCP socket connection
@@ -136,7 +140,7 @@ void loop() {
     calculate_average_temperature(temperatureC, voltage_out);
     print_value_to_console(temperatureC, voltage_out);
     get_current_time(epochTime, formattedTime);
-    print_value_to_screen(formattedTime.substring(0, 5), temperatureC);
+    print_value_to_screen(formattedTime.substring(0, 5), temperatureC, connected_internet, connected_mqtt);
 
     elapsed_time = millis();
   }
@@ -149,7 +153,7 @@ void loop() {
 
   // TODO add discord refresh loop
   // Send alert to discord
-  if (temperatureC >= temp_alert) {
+  if (temperatureC >= temp_alert && WiFi.status() == WL_CONNECTED) {
     send_message_to_discord();
   }
 }
@@ -248,7 +252,7 @@ void get_wifi_connection_info() {
   Serial.println();
 }
 
-void print_value_to_screen(String _time, float _temperatureC) {
+void print_value_to_screen(String _time, float _temperatureC, int _connected_internet, int _connected_mqtt) {
 
   // clear display
   display.clearDisplay();
@@ -274,6 +278,15 @@ void print_value_to_screen(String _time, float _temperatureC) {
   display.write(167);
   display.setTextSize(2);
   display.print("C");
+
+  // display connection status
+  display.setTextSize(1);
+  display.setCursor(115, 0);
+  display.cp437(true);
+  display.write(_connected_internet);
+  display.cp437(true);
+  display.write(_connected_mqtt);
+  
 
   display.display();
 }
@@ -360,6 +373,10 @@ void connectWiFi() {
     print_setup_to_screen(_status, 100);
     delay(5000);
   }
+  
+
+ 
+ 
   Serial.println();
 
   Serial.println("[LOG]: You're connected to the network");
@@ -374,7 +391,7 @@ void connectMQTT() {
   Serial.print(" ");
   print_setup_to_screen(_status, 2000);
 
-  while (!mqttClient.connect(broker, 8883)) {
+  while (!mqttClient.connect(broker, broker_port)) {
     // failed, retry
     _status = _status + ".";
     Serial.print(".");
